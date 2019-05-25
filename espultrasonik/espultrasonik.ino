@@ -14,8 +14,9 @@ const int httpsPort = 443;
 
 double lat = -7;
 double lon = 169.88;
-int potPin = A0;
-int val = 100;
+
+float duration;
+float distance;
 
 // Use web browser to view and copy
 // SHA1 fingerprint of the certificate
@@ -38,11 +39,17 @@ void setup() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  pinMode(A0, INPUT);
 }
 
+
 void loop() {
-  val = analogRead(potPin);
-  
+
+  int val = analogRead(0);
+  val = map(val, 0, 1023, 0, 100);
+  Serial.println(val);
+
+
   Serial.print("connecting to ");
   Serial.println(host);
 
@@ -53,7 +60,7 @@ void loop() {
     Serial.println("connection failed");
     return;
   }
-  String url = "/api/update?key=7ab754b083119959ba423117906fdb98&var1=" + String(lat, 6) + "&var2=" + String(lon, 6) + "&var3=" + String(val, 6);
+  String url = "/api/update?key=1d7dea814daf44f1736def63e35a4741&var1=" + String(lat, 6) + "&var2=" + String(lon, 6) + "&var3=" + String(val);
   Serial.print("requesting URL: ");
   Serial.println(url);
 

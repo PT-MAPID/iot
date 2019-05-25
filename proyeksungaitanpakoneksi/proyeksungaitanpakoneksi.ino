@@ -7,8 +7,8 @@
 //#define trig_pin     3   // pin TRIG to D1
 //#define echo_pin     2   // pin ECHO to D2
 
-#define trig_pin     3   // pin TRIG to D1
-#define echo_pin     2   // pin ECHO to D2
+#define trig_pin     5   // pin TRIG to D1
+#define echo_pin     4   // pin ECHO to D2
 
 // defines variables
 float duration;
@@ -46,57 +46,3 @@ void loop() {
 //  sendingdata();
   delay(1000);
 }
-
-//void sendingdata()
-//{
-//  mySerial.println("AT");
-//  ShowSerialData();
-//  delay(d);
-//
-//  mySerial.println("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"");
-//  ShowSerialData();
-//  delay(d);
-//
-//  mySerial.println("AT+SAPBR=3,1,\"APN\",\"\"");
-//  ShowSerialData();
-//  delay(d);
-//
-//  mySerial.println("AT+SAPBR=1,1");
-//  ShowSerialData();
-//  delay(d);
-//
-//  mySerial.println("AT+SAPProBR=2,1");
-//  ShowSerialData();
-//  delay(d);
-//
-//  mySerial.println("AT+HTTPINIT");
-//  ShowSerialData();
-//  delay(d);
-//
-//  mySerial.println("AT+HTTPPARA=\"CID\",1");
-//  ShowSerialData();
-//  delay(d);
-//  ShowSerialData();
-//
-//  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=a96e7b31dc53765cd671653cbc34a38d&var1=" + String(latitude)
-//               + "&var2=" + String(longitude)
-//               + "&var3=" + String(value) + "\"";
-//
-//  mySerial.println(str);
-//  ShowSerialData();
-//  delay(d);
-//
-//  mySerial.println("AT+HTTPSSL=1");
-//  ShowSerialData();
-//  delay(d);
-//
-//  mySerial.println("AT+HTTPACTION=0");
-//  ShowSerialData();
-//  delay(d);
-//}
-//
-//void ShowSerialData()
-//{
-//  while (mySerial.available() != 0)
-//    Serial.write(mySerial.read());
-//}
