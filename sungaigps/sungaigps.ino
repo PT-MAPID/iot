@@ -214,7 +214,7 @@ void sendingdata()
   delay(d*3);
   Serial.println(mySerial.readString());
   
-  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=f387a8be7d434caa5a1b721ae918c24a&var1=" + latitude
+  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=PASTE_YOUR_API_KEY_HERE&var1=" + latitude
                + "&var2=" + longitude
                + "&var3=" + String(getDistance(),2)
                + "&var4=" + String(AnalogWert)
