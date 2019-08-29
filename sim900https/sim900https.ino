@@ -51,7 +51,7 @@ void sendingdata()
   delay(d);
   ShowSerialData();
   
-  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=c48b656997fd46a5e37e9dbfa3bf00eb&var1="+String(latitude)
+  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=PASTE_YOUR_API_KEY_HERE&var1="+String(latitude)
   +"&var2="+String(longitude)
   +"&var3="+String(coba)+"\"";
   

@@ -132,7 +132,7 @@ void loop() {
   delay(d*3);
   Serial.println(mySerial.readString());
   
-  String str = "AT+HTTPPARA=\"URL\",\"https://api.mapid.io/api/update?key=a96e7b31dc53765cd671653cbc34a38d&var1="+latitude+"&var2="+longitude+"&var3="+String(value, 4)+"\"";
+  String str = "AT+HTTPPARA=\"URL\",\"https://api.mapid.io/api/update?key=PASTE_YOUR_API_KEY_HERE&var1="+latitude+"&var2="+longitude+"&var3="+String(value, 4)+"\"";
   
   mySerial.println(str);// setting the httppara,
   //the second parameter is the website from where you want to access data

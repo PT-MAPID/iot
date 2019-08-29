@@ -53,7 +53,7 @@ void loop() {
     Serial.println("connection failed");
     return;
   }
-  String url = "/api/update?key=7ab754b083119959ba423117906fdb98&var1=" + String(lat, 6) + "&var2=" + String(lon, 6) + "&var3=" + String(val, 6);
+  String url = "/api/update?key=PASTE_YOUR_API_KEY_HERE&var1=" + String(lat, 6) + "&var2=" + String(lon, 6) + "&var3=" + String(val, 6);
   Serial.print("requesting URL: ");
   Serial.println(url);
 
