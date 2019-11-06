@@ -1,17 +1,35 @@
 #include <SoftwareSerial.h>
-#define DEBUG true
-SoftwareSerial mySerial(9, 8);//tx, rx
-String data[7], latitude, longitude, altitud, timegps, speedknot, c, state, com;
-int d=500;
-float value=13.7575;
-
-void setup() {
+SoftwareSerial mySerial(9, 8);
+String c, latitude, longitude, altitud, timegps, speedknot, state, dir;
+int d = 100;
+#define trig_pin     2   // pin TRIG to D1
+#define echo_pin     3   // pin ECHO to D2
+float duration;
+float distance;
+void setup()
+{
+  pinMode(trig_pin, OUTPUT);
+  pinMode(echo_pin, INPUT);
   Serial.begin(9600);
   mySerial.begin(9600);
-  delay(5);
 }
-
+float  getDistance() {
+  digitalWrite(trig_pin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig_pin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig_pin, LOW);
+  duration = pulseIn(echo_pin, HIGH);
+  distance = (duration / 2) / 28.1;
+  return distance;
+}
 void loop() {
+  getDistance();
+  sendingdata();
+  delay(10);
+}
+void sendingdata()
+{
   mySerial.println("AT");
   delay(d);
 
@@ -41,7 +59,7 @@ void loop() {
 
   Serial.println(mySerial.readString());
   mySerial.println("AT+CGPSPWR=1");
-  delay(d*3);
+  delay(d * 3);
 
   mySerial.println("AT+CGNSPWR=1");
   delay(d);
@@ -51,38 +69,66 @@ void loop() {
   delay(d);
 
   Serial.println(mySerial.readString());
+  Serial.println("GPS Initialising...");
+  delay(d);
+
+  Serial.println(mySerial.readString());
   mySerial.println("AT+CGPSSTATUS?");
   delay(d);
 
   Serial.println(mySerial.readString());
-  mySerial.println("AT+CGNSINF");
+  mySerial.println("AT+CGNSINF");         //get the gps data
+  c = mySerial.readString();              //save the paramater returned from AT command
   delay(d);
 
-  if (mySerial.available() > 0)
-  {
-    while (mySerial.available() > 0)
-    {
-      c = (mySerial.readString());
-      delay(d*3);
-      c.remove(100);
-    }
-  }
+  //  Serial.println("State      :" + state);
+  //  Serial.println("Time       :" + timegps);
+  //  Serial.println("c      :" + c );
 
-  state = c.substring(25, 26);
-  timegps = c.substring(27, 41);
-  latitude = c.substring(46, 55);
-  longitude = c.substring(56, 66);
-  altitud = c.substring(67, 74);
-  speedknot = c.substring(75, 79);
+  int state_1 = c.indexOf(",", 0) + 1;
+  int state_2 = c.indexOf(",", state_1 + 1);
+  int time_1 = c.indexOf(",", state_2) + 1;
+  int time_2 = c.indexOf(",", time_1 + 1);
+  int lat_1 = c.indexOf(",", time_2) + 1;
+  int lat_2 = c.indexOf(",", lat_1 + 1);
+  int lon_1 = c.indexOf(",", lat_2) + 1;
+  int lon_2 = c.indexOf(",", lon_1 + 1);
+  int alt_1 = c.indexOf(",", lon_2) + 1;
+  int alt_2 = c.indexOf(",", alt_1 + 1);
+  int speed_1 = c.indexOf(",", alt_2) + 1;
+  int speed_2 = c.indexOf(",", speed_1 + 1);
+  int dir_1 = c.indexOf(",", speed_2) + 1;
+  int dir_2 = c.indexOf(",", dir_1 + 1);
 
-  Serial.println("State      :" + state);
-  Serial.println("Time       :" + timegps);
-  Serial.println("Latitude   :" + latitude);
-  Serial.println("Longitude  :" + longitude);
-  Serial.println("altitud   :" + altitud);
-  Serial.println("Speed      :" + speedknot + " knot");
-  Serial.println(" ");
+  //  Serial.println("state_1:" + String(state_1));
+  //  Serial.println("state_2:" + String(state_2));
+  //  Serial.println("time_1:" + String(time_1));
+  //  Serial.println("time_2:" + String(time_2));
+  //  Serial.println("lat_1:" + String(lat_1));
+  //  Serial.println("lat_2:" + String(lat_2));
+  //  Serial.println("lon_1:" + String(lon_1));
+  //  Serial.println("lon_2:" + String(lon_2));
+  //  Serial.println("alt_1:" + String(alt_1));
+  //  Serial.println("alt_2:" + String(alt_2));
+  //  Serial.println("speed_1:" + String(speed_1));
+  //  Serial.println("speed_2:" + String(speed_2));
+  //  Serial.println("dir_1:" + String(dir_1));
+  //  Serial.println("dir_2:" + String(dir_2));
+
+  state = c.substring(state_1, state_2);
+  latitude = c.substring(lat_1, lat_2);
+  longitude = c.substring(lon_1, lon_2);
+  altitud = c.substring(alt_1, alt_2);
+  speedknot = c.substring(speed_1, speed_2);
+  dir = c.substring(dir_1, dir_2);
+
+  Serial.println("Latitude    :" + latitude);
+  Serial.println("Longitude   :" + longitude);
+  Serial.println("altitud     :" + altitud);
+  Serial.println("Speed       :" + speedknot + " km/hour");
+  Serial.println("Direction   :" + dir + " degree");
   delay(d);
+
 
   Serial.println(mySerial.readString());
   mySerial.println("AT+CIPSEND");
@@ -121,15 +167,20 @@ void loop() {
   Serial.println(mySerial.readString());
   mySerial.println();
   mySerial.println("AT+SAPBR=1,1");
-  delay(d*4);
+  delay(d * 4);
 
   Serial.println(mySerial.readString());
   mySerial.println("AT+HTTPINIT"); //init the HTTP request
-  delay(d*3);
+  delay(d * 3);
   Serial.println(mySerial.readString());
-  
-  String str = "AT+HTTPPARA=\"URL\",\"https://api.mapid.io/api/update?key=fba616f650f8d524810f98a01134919e&var1="+latitude+"&var2="+longitude+"&var3=10"+"\"";
-  
+
+  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=ed10ba7f4b54ab98360592bff55a6fb3&var1=" + latitude
+               + "&var2=" + longitude
+               + "&var3=" + altitud
+               + "&var4=" + speedknot
+               + "&var5=" + dir
+               + "\"";
+
   mySerial.println(str);// setting the httppara,
   //the second parameter is the website from where you want to access data
   delay(d);
@@ -145,7 +196,7 @@ void loop() {
 
   Serial.println(mySerial.readString());
   mySerial.println("AT+HTTPREAD=0,20");// read the data from the website you access
-  delay(d*2);
+  delay(d * 2);
 
   Serial.println(mySerial.readString());
   mySerial.println("");
@@ -161,13 +212,11 @@ void loop() {
   delay(d);
 
   Serial.println(mySerial.readString());
-  delay(d*10);
+  delay(d * 10);
 
   mySerial.flush();
   mySerial.println("AT+CIPCLOSE");
   delay(d);
 
-  Serial.println(mySerial.readString());
-  Serial.println("GPS Initialising...");
-  delay(d*10);
+
 }

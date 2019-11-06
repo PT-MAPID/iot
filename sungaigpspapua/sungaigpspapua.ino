@@ -1,17 +1,97 @@
 #include <SoftwareSerial.h>
-#define DEBUG true
-SoftwareSerial mySerial(9, 8);//tx, rx
+SoftwareSerial mySerial(7, 8);
 String data[7], latitude, longitude, altitud, timegps, speedknot, c, state, com;
-int d=500;
-float value=13.7575;
+int d = 1700;
 
-void setup() {
+float DistanceMax;
+float DistanceMin;
+
+bool NotAccurate = true;
+
+#define trig_pin     2   // pin TRIG to D1
+#define echo_pin     3   // pin ECHO to D2
+
+// defines variables
+float duration;
+float distance;
+//float next = 250;
+//float value;
+//float ema = 0.2;
+
+float AnalogWert;
+float Powerwert;
+
+void setup()
+{
+  pinMode(trig_pin, OUTPUT);
+  pinMode(echo_pin, INPUT);
   Serial.begin(9600);
   mySerial.begin(9600);
-  delay(5);
+}
+
+float  getDistance() {
+  digitalWrite(trig_pin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig_pin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig_pin, LOW);
+  duration = pulseIn(echo_pin, HIGH);
+  //  distance = (duration / 2) / 29.1;
+  distance = (duration / 2) / 28.1;
+  return distance;
 }
 
 void loop() {
+
+  do {
+
+    getDistance();
+    while (getDistance() >= 500 || getDistance() <=  20) {
+      //data is not in range
+      getDistance();
+    }
+    //Now the data is in range, we need to save the data values and compare it. Only once.
+    //If it's bad, then try it all again.
+    DistanceMax = (getDistance() + 30);
+    DistanceMin = (getDistance() - 30);
+
+    getDistance();
+
+    while (getDistance() >= 500 || getDistance() <=  20) {
+      //data is not in range
+      getDistance();
+    }
+
+    if (getDistance() > DistanceMax || getDistance() < DistanceMin) {
+      //our data is bad
+      NotAccurate = true;
+    }
+    else {
+      //our data is good
+      NotAccurate = false;
+    }
+
+  } while (NotAccurate);
+
+  //  next = getDistance();
+  //  nilai= getValue();
+  //  value = (ema * next) + ((1 - ema) * value);
+
+
+  Serial.print("Distance: ");
+  Serial.print(getDistance(), 0);
+  Serial.print(" cm");
+
+
+
+  sendingdata();
+  NotAccurate = true;
+
+  delay(100000-40000);
+}
+
+void sendingdata()
+{
   mySerial.println("AT");
   delay(d);
 
@@ -32,6 +112,10 @@ void loop() {
   delay(d);
 
   Serial.println(mySerial.readString());
+  mySerial.println("AT+CSTT?");
+  delay(d);
+
+  Serial.println(mySerial.readString());
   mySerial.println("AT+CIICR");
   delay(d);
 
@@ -40,7 +124,7 @@ void loop() {
   delay(1000);
 
   Serial.println(mySerial.readString());
-  mySerial.println("AT+CGPSPWR=1");
+  mySerial.println(" AT+CGPSPWR=1");
   delay(d*3);
 
   mySerial.println("AT+CGNSPWR=1");
@@ -128,7 +212,10 @@ void loop() {
   delay(d*3);
   Serial.println(mySerial.readString());
   
-  String str = "AT+HTTPPARA=\"URL\",\"https://api.mapid.io/api/update?key=fba616f650f8d524810f98a01134919e&var1="+latitude+"&var2="+longitude+"&var3=10"+"\"";
+  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=fa6565c7243a3550e9f06026d9ced813&var1=" + latitude
+               + "&var2=" + longitude
+               + "&var3=" + String(getDistance(),2)
+               + "\"";
   
   mySerial.println(str);// setting the httppara,
   //the second parameter is the website from where you want to access data

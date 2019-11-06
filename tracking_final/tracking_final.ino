@@ -41,9 +41,9 @@ void sendingdata()
 
   //commented
 
-//  mySerial.println("AT+CIPSHUT");
-//  Serial.println(mySerial.readString());
-//  delay(d);
+  //  mySerial.println("AT+CIPSHUT");
+  //  Serial.println(mySerial.readString());
+  //  delay(d);
 
   //  mySerial.println("AT+CIPMUX=0");
   //  Serial.println(mySerial.readString());
@@ -115,6 +115,7 @@ void sendingdata()
   Serial.println("");
   delay(d);
 
+
   //commented
 
   //  mySerial.println("AT+CIPSEND");
@@ -159,24 +160,29 @@ void sendingdata()
   Serial.println(mySerial.readString());
   delay(d);
 
-//commented
-
-    mySerial.println("AT+SAPBR=1,1");
-    Serial.println(mySerial.readString());
-    delay(d * 4);
-
-    mySerial.println("AT+HTTPINIT"); //init the HTTP request
-    Serial.println(mySerial.readString());
-    delay(d * 3);
-
-
   //commented
 
-  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=PASTE_YOUR_API_KEY_HERE&var1=" + latitude
-               + "&var2=" + longitude
-               + "&var3=" + altitud
-               + "&var4=" + speedknot
-               + "&var5=" + dir
+  mySerial.println("AT+SAPBR=1,1");
+  Serial.println(mySerial.readString());
+  delay(d * 4);
+
+  mySerial.println("AT+HTTPINIT"); //init the HTTP request
+  Serial.println(mySerial.readString());
+  delay(d * 3);
+
+  String var1 = (String(latitude).length()>1) ? ("&var1=" + latitude) : "";
+  String var2 = (String(longitude).length()>1) ? ("&var2=" + longitude) : "";
+  String var3 = (String(altitud).length()>1) ? ("&var3=" + altitud) : "";
+  String var4 = (String(speedknot).length()>1) ? ("&var4=" + speedknot) : "";
+  String var5 = (String(dir).length()>1) ? ("&var5=" + dir) : "";
+  
+  //commented
+  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=PASTE_YOUR_WRITE_API_KEY"
+               + var1
+               + var2
+               + var3
+               + var4
+               + var5
                + "\"";
   mySerial.println(str);// setting the httppara,
   Serial.println(mySerial.readString());

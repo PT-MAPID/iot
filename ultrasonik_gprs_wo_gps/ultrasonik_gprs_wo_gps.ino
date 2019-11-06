@@ -1,24 +1,15 @@
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(7, 8);
-float latitude = -7.0599;
-float longitude = 109.4259;
-int d = 500;
-
-int coba = 99;
-
-#define trig_pin     3   // pin TRIG to D1
-#define echo_pin     2   // pin ECHO to D2
-
+SoftwareSerial mySerial(7, 8); //tx rx
+#define trig_pin     2
+#define echo_pin     3
 // defines variables
 float duration;
 float distance;
-float next;
 float value;
-float ema = 0.2;
-
-float AnalogWert;
-float Powerwert;
-
+float latitude = -7.0599;
+float longitude = 109.4259;
+float voltage;
+int d = 500;
 void setup()
 {
   pinMode(trig_pin, OUTPUT);
@@ -26,7 +17,14 @@ void setup()
   Serial.begin(9600);
   mySerial.begin(9600);
 }
-
+void loop()
+{
+  voltage = analogRead(A0);
+  value = getDistance();
+  sendingdata();
+  delay(1000);
+  Serial.println(voltage);
+}
 float  getDistance() {
   digitalWrite(trig_pin, LOW);
   delayMicroseconds(2);
@@ -34,75 +32,48 @@ float  getDistance() {
   delayMicroseconds(10);
   digitalWrite(trig_pin, LOW);
   duration = pulseIn(echo_pin, HIGH);
-  //  distance = (duration / 2) / 29.1;
   distance = (duration / 2) / 28.1;
   return distance;
 }
-
-void loop() {
-  AnalogWert = analogRead(A0);
-  Powerwert = AnalogWert * (12.0 / 1023)*2.21; //in case of higher voltage, change the code: powerwert = AnalogWert *(x/1023); x= your new power supply maximum voltage
-  next = getDistance();
-//  value = (ema * next) + ((1 - ema) * value);
-//  Serial.print("Distance: ");
-//  Serial.print(next,0);
-//  Serial.print(" cm");  
-//  Serial.print("\t");
-//  Serial.println(Powerwert);
-  sendingdata();
-  delay(100);
-}
-
 void sendingdata()
 {
   mySerial.println("AT");
   ShowSerialData();
   delay(d);
-
   mySerial.println("AT+SAPBR=3,1,\"CONTYPE\",\"GPRS\"");
   ShowSerialData();
   delay(d);
-
   mySerial.println("AT+SAPBR=3,1,\"APN\",\"Telkomsel\"");
   ShowSerialData();
   delay(d);
-
   mySerial.println("AT+SAPBR=1,1");
   ShowSerialData();
   delay(d);
-
   mySerial.println("AT+SAPProBR=2,1");
   ShowSerialData();
   delay(d);
-
   mySerial.println("AT+HTTPINIT");
   ShowSerialData();
   delay(d);
-
   mySerial.println("AT+HTTPPARA=\"CID\",1");
   ShowSerialData();
   delay(d);
   ShowSerialData();
-
-  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=PASTE_YOUR_WRITE_API_KEY&var1=" + String(latitude)
+  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=fa6565c7243a3550e9f06026d9ced813&var1=" + String(latitude)
                + "&var2=" + String(longitude) 
-               + "&var3=" + String(next)
-               + "&var4=" + String(AnalogWert)
+               + "&var3=" + String(value)
+//               + "&var4=" + String(voltage)
                + "\"";
-
   mySerial.println(str);
   ShowSerialData();
   delay(d);
-
   mySerial.println("AT+HTTPSSL=1");
   ShowSerialData();
   delay(d);
-
   mySerial.println("AT+HTTPACTION=0");
   ShowSerialData();
   delay(d);
 }
-
 void ShowSerialData()
 {
   while (mySerial.available() != 0)

@@ -8,8 +8,8 @@ float DistanceMin;
 
 bool NotAccurate = true;
 
-#define trig_pin     3   // pin TRIG to D1
-#define echo_pin     2   // pin ECHO to D2
+#define trig_pin     2   // pin TRIG to D1
+#define echo_pin     3   // pin ECHO to D2
 
 // defines variables
 float duration;
@@ -214,7 +214,7 @@ void sendingdata()
   delay(d*3);
   Serial.println(mySerial.readString());
   
-  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=PASTE_YOUR_API_KEY_HERE&var1=" + latitude
+  String str = "AT+HTTPPARA=\"URL\",\"api.mapid.io/api/update?key=fa6565c7243a3550e9f06026d9ced813&var1=" + latitude
                + "&var2=" + longitude
                + "&var3=" + String(getDistance(),2)
                + "&var4=" + String(AnalogWert)
