@@ -1,5 +1,5 @@
-#include <ESP8266WiFi.h>                                //Memuat library untuk menggunakan chip ESP
-#include <WiFiClientSecure.h>                           //Memuat library untuk menggunakan WiFi dengan koneksi secure
+#include <ESP8266WiFi.h>                                //Memuat library untuk menggunakan chip ESP, jika warnanya belum orange kamu perlu install librarynya
+#include <WiFiClientSecure.h>                           //Memuat library untuk menggunakan WiFi dengan koneksi secure, jika warnanya belum orange kamu perlu install librarynya
 
 #ifndef STASSID
 #define STASSID "ISI_SSID_WIFI_DI_SINI"                 //<-- Masukkan SSID WiFi kamu di sini
